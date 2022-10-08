@@ -158,7 +158,7 @@ public class HierarchicalStateMachineConfig extends StateMachineConfigurerAdapte
             @Override
             public boolean evaluate(StateContext<String, String> context) {
                 Object foo = context.getExtendedState().getVariables().get("foo");
-                log.info("guard判断：foo={}", foo);
+                log.info("guard判断：{} == {}", foo, match);
                 return Objects.equals(foo, match);
             }
         };
