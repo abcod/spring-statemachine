@@ -15,4 +15,9 @@ public class Result {
         result.success = success;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s: %s", success, message);
+    }
 }
