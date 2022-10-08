@@ -12,7 +12,7 @@ public class SimpleAnnotationListener {
 
     @OnTransitionStart
     public void transitionStart(Message<?> msg) {
-        log.info("【注解监听】【transitionStart】：{}，没有source，没有target", msg.getPayload());
+        log.info("【注解监听】【transitionStart】：{}，没有source，没有target", msg);
     }
 
     @OnTransitionStart(source = "A")
@@ -32,7 +32,7 @@ public class SimpleAnnotationListener {
 
     @OnTransition
     public void onTransition(Message<?> msg) {
-        log.info("【注解监听】【onTransition】：{}", msg.getPayload());
+        log.info("【注解监听】【onTransition】：{}", msg);
     }
 
     @OnStateExit
@@ -42,17 +42,17 @@ public class SimpleAnnotationListener {
 
     @OnStateEntry
     public void onStateEntry(Message<?> msg) {
-        log.info("【注解监听】【onStateEntry】：{}", msg.getPayload());
+        log.info("【注解监听】【onStateEntry】：{}", msg);
     }
 
     @OnStateChanged
     public void onStateChanged(Message<?> msg) {
-        log.info("【注解监听】【onStateChanged】：{}", msg.getPayload());
+        log.info("【注解监听】【onStateChanged】：{}", msg);
     }
 
     @OnTransitionEnd
     public void onTransitionEnd(Message<?> msg) {
-        log.info("【注解监听】【onTransitionEnd】：{}", msg.getPayload());
+        log.info("【注解监听】【onTransitionEnd】：{}", msg);
     }
 
     @OnStateMachineStart

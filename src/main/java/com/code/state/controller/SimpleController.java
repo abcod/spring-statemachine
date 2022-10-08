@@ -1,44 +1,80 @@
 package com.code.state.controller;
 
-import cn.hutool.core.util.ReflectUtil;
+import com.code.state.config.GuardStateMachineConfig;
+import com.code.state.config.HierarchicalStateMachineConfig;
+import com.code.state.config.StateMachineFactory;
 import com.code.state.dto.Result;
+import com.code.state.service.StatemachineHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.statemachine.ObjectStateMachine;
+import org.springframework.context.ApplicationContext;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.StateMachineSystemConstants;
+import org.springframework.statemachine.persist.StateMachinePersister;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
 
 @Slf4j
 @RestController
 public class SimpleController {
 
-    @Resource(name = StateMachineSystemConstants.DEFAULT_ID_STATEMACHINE)
-    private StateMachine<String, String> stateMachine;
+    private final ApplicationContext applicationContext;
+
+    public SimpleController(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
 
     @GetMapping("/simple")
-    public Result sendEvent(@RequestParam String event) {
-        log.info("-----------------------------------------------------------------");
+    public Result simple(@RequestParam String event) {
+        StateMachine<String, String> stateMachine = applicationContext.getBean(StateMachineSystemConstants.DEFAULT_ID_STATEMACHINE, StateMachine.class);
+        return StatemachineHandler.sendEvent(stateMachine, event);
+    }
 
-        ObjectStateMachine<?, ?> objStateMachine = (ObjectStateMachine<?, ?>) stateMachine;
-        Object beanName = ReflectUtil.getFieldValue(objStateMachine, "beanName");
-        log.info("状态机的beanName：{}，事件：{}", beanName, event);
-        if (stateMachine.getState() == null) {
-            return Result.from(false, "状态机未知状态");
+    @GetMapping("/persist")
+    public Result persist(@RequestParam String id, @RequestParam String event) throws Exception {
+        StateMachine<String, String> stateMachine = applicationContext.getBean(StateMachineSystemConstants.DEFAULT_ID_STATEMACHINE, StateMachine.class);
+        StateMachinePersister<String, String, String> stateMachinePersister = applicationContext.getBean(StateMachinePersister.class);
+
+        //恢复状态机的状态
+        stateMachinePersister.restore(stateMachine, id);
+
+        Result result = StatemachineHandler.sendEvent(stateMachine, event);
+
+        //如果状态进行了变化，进行保存
+        if (result.isSuccess()) {
+            stateMachinePersister.persist(stateMachine, id);
         }
-        Object fromState = stateMachine.getState().getId();
 
-        //这里发送事件进行状态变换
-        boolean success = stateMachine.sendEvent(event);
+        return result;
+    }
 
-        Object toState = stateMachine.getState().getId();
-        String machineResult = String.format("[%s]->[%s]", fromState, toState);
-        log.info("状态机转换结果：{} {}", success, machineResult);
+    @GetMapping("/guard")
+    public Result guard(@RequestParam String event) {
+        StateMachine<String, String> stateMachine = applicationContext.getBean(GuardStateMachineConfig.STATEMACHINE_NAME, StateMachine.class);
+        return StatemachineHandler.sendEvent(stateMachine, event);
+    }
 
-        return Result.from(success, machineResult);
+
+    @GetMapping("/hierarchical")
+    public Result hierarchical(@RequestParam String event) {
+        StateMachine<String, String> stateMachine = applicationContext.getBean(HierarchicalStateMachineConfig.STATEMACHINE_NAME, StateMachine.class);
+        return StatemachineHandler.sendEvent(stateMachine, event);
+    }
+
+    @GetMapping("/factory")
+    public Result factory(@RequestParam String event) {
+        StateMachineFactory factory = applicationContext.getBean(StateMachineFactory.class);
+
+        //创建并启动状态机
+        StateMachine<String, String> stateMachine = factory.build();
+        stateMachine.start();
+
+        Result result = StatemachineHandler.sendEvent(stateMachine, event);
+
+        //关闭状态机
+        stateMachine.stop();
+
+        return result;
     }
 }

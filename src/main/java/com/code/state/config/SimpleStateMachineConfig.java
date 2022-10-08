@@ -1,6 +1,5 @@
 package com.code.state.config;
 
-import com.code.state.listener.SimpleListenerImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.statemachine.config.EnableStateMachine;
@@ -52,8 +51,8 @@ public class SimpleStateMachineConfig extends StateMachineConfigurerAdapter<Stri
     public void configure(StateMachineConfigurationConfigurer<String, String> config) throws Exception {
         //系统启动自启
         config.withConfiguration()
-                .autoStartup(true)
-                .listener(new SimpleListenerImpl());
+//                .listener(new SimpleListenerImpl())
+                .autoStartup(true);
     }
 
     /**
