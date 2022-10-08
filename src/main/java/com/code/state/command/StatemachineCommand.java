@@ -62,7 +62,7 @@ public class StatemachineCommand {
 
     @ShellMethod(key = "guard", value = "状态机拦截")
     public void guard(String event) {
-        StatemachineHandler.sendEvent(simpleStateMachine, event);
+        StatemachineHandler.sendEvent(guardStateMachine, event);
     }
 
     @ShellMethod(key = "factory", value = "工厂状态机")
@@ -75,5 +75,10 @@ public class StatemachineCommand {
 
         //关闭状态机
         stateMachine.stop();
+    }
+
+    @ShellMethod(key = "hie", value = "分层状态机")
+    public void hierarchical(String event) {
+        StatemachineHandler.sendEvent(hieStateMachine, event.toUpperCase());
     }
 }
