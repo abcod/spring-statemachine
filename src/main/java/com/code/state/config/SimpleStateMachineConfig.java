@@ -38,9 +38,9 @@ public class SimpleStateMachineConfig extends StateMachineConfigurerAdapter<Stri
 
         StateConfigurer<String, String> configurer = states.withStates()
                 //配置起始状态
-                .initial(STATE_INITIAL);
+                .initial(STATE_INITIAL)
                 //终态可不配置，配置终态后无法再转为其他状态
-//                .end("E");
+                .end("E");
 
         //所有状态
         for (String s : STATE_LIST) {
