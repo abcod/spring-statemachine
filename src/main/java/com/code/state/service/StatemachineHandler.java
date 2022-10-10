@@ -37,7 +37,7 @@ public class StatemachineHandler {
         Object toState = stateMachine.getState().getIds();
 
         String machineResult = String.format("[%s]->[%s]", fromState, toState);
-        log.info("状态机转换结果：{} {}", success, machineResult);
+        log.warn("状态机转换结果：{} {}", success, machineResult);
         return Result.from(success, machineResult);
     }
 }
